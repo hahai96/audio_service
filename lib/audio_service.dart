@@ -308,6 +308,33 @@ class MediaItem {
   bool operator ==(dynamic other) => other is MediaItem && other.id == id;
 }
 
+/// Describes an audio task that can run in the background and react to audio
+/// events.
+///
+/// You should subclass [BackgroundAudioTask] and override the callbacks for
+/// each type of event that your background task wishes to react to.
+abstract class VideoServiceClient {
+
+  void onStop() {}
+
+  /// Called when a client has requested to pause audio playback, such as via a
+  void onPause() {}
+
+  /// Called when a client has requested to resume audio playback, such as via
+  void onPlay() {}
+
+  void togglePlaying() {}
+
+  /// Called when a client has requested to skip to the next item in the queue,
+  void onSkipToNext() {}
+
+  /// Called when a client has requested to skip to the previous item in the
+  void onSkipToPrevious() {}
+
+  /// Called when the client has requested to seek to a position, such as via a
+  void onSeekTo(int position) {}
+}
+
 /// A media action that can be controlled by a client.
 ///
 /// The set of media controls available at any moment depends on the current
@@ -393,6 +420,9 @@ const String _CUSTOM_PREFIX = 'custom_';
 /// although the audio service will continue to run in the background. If your
 /// UI once again becomes visible, you should reconnect to the audio service.
 class AudioService {
+
+  static VideoServiceClient _client;
+
   /// The root media ID for browsing media provided by the background
   /// task.
   static const String MEDIA_ROOT_ID = "root";
@@ -443,6 +473,10 @@ class AudioService {
   /// True after service stopped and !running.
   static bool _afterStop = false;
 
+  static void enableServiceClient(VideoServiceClient client) {
+    _client = client;
+  }
+
   /// Connects to the service from your UI so that audio playback can be
   /// controlled.
   ///
@@ -485,6 +519,29 @@ class AudioService {
               : null;
           _queue = args?.map(_raw2mediaItem)?.toList();
           _queueSubject.add(_queue);
+          break;
+        case 'onSkipToNext':
+          _client.onSkipToNext();
+          break;
+        case 'onSkipToPrevious':
+          _client.onSkipToPrevious();
+          break;
+        case 'onSeekTo':
+          final List args = call.arguments;
+          int pos = args[0];
+          _client.onSeekTo(position);
+          break;
+        case 'onClick':
+          _client.togglePlaying();
+          break;
+        case 'onPlay':
+          _client.onPlay();
+          break;
+        case 'onPause':
+          _client.onPause();
+          break;
+        case 'onStop':
+          _client.onStop();
           break;
         case 'onStopped':
           _browseMediaChildren = null;
