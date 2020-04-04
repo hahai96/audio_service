@@ -81,8 +81,10 @@ class PlaybackState {
   int get currentPosition {
     if (basicState == BasicPlaybackState.playing) {
       return (position +
-              ((DateTime.now().millisecondsSinceEpoch - updateTime) *
-                  (speed ?? 1.0)))
+          ((DateTime
+              .now()
+              .millisecondsSinceEpoch - updateTime) *
+              (speed ?? 1.0)))
           .toInt();
     } else {
       return position;
@@ -334,9 +336,10 @@ class MediaControl {
 }
 
 const MethodChannel _channel =
-    const MethodChannel('ryanheise.com/audioService');
+const MethodChannel('ryanheise.com/audioService');
 
-Map _mediaItem2raw(MediaItem mediaItem) => {
+Map _mediaItem2raw(MediaItem mediaItem) =>
+    {
       'id': mediaItem.id,
       'album': mediaItem.album,
       'title': mediaItem.title,
@@ -352,7 +355,8 @@ Map _mediaItem2raw(MediaItem mediaItem) => {
       'extras': mediaItem.extras,
     };
 
-MediaItem _raw2mediaItem(Map raw) => MediaItem(
+MediaItem _raw2mediaItem(Map raw) =>
+    MediaItem(
       id: raw['id'],
       album: raw['album'],
       title: raw['title'],
@@ -454,7 +458,7 @@ class AudioService {
           _browseMediaChildrenSubject.add(_browseMediaChildren);
           break;
         case 'onPlaybackStateChanged':
-          // If this event arrives too late, ignore it.
+        // If this event arrives too late, ignore it.
           if (_afterStop) return;
           final List args = call.arguments;
           int actionBits = args[1];
@@ -516,6 +520,7 @@ class AudioService {
 
   /// True if the background audio task is running.
   static bool _running = false;
+
   static bool get running => _running;
 
   /// Starts a background audio task which will continue running even when the
@@ -556,7 +561,7 @@ class AudioService {
     _running = true;
     _afterStop = false;
     final ui.CallbackHandle handle =
-        ui.PluginUtilities.getCallbackHandle(backgroundTaskEntrypoint);
+    ui.PluginUtilities.getCallbackHandle(backgroundTaskEntrypoint);
     if (handle == null) {
       return false;
     }
@@ -573,17 +578,17 @@ class AudioService {
       // FlutterNativeView API directly or by waiting until Flutter allows
       // regular isolates to use method channels.
       AudioService._flutterIsolate =
-          await FlutterIsolate.spawn(_iosIsolateEntrypoint, callbackHandle);
+      await FlutterIsolate.spawn(_iosIsolateEntrypoint, callbackHandle);
     }
     final success = await _channel.invokeMethod('start', {
       'callbackHandle': callbackHandle,
       'androidNotificationChannelName': androidNotificationChannelName,
       'androidNotificationChannelDescription':
-          androidNotificationChannelDescription,
+      androidNotificationChannelDescription,
       'notificationColor': notificationColor,
       'androidNotificationIcon': androidNotificationIcon,
       'androidNotificationClickStartsActivity':
-          androidNotificationClickStartsActivity,
+      androidNotificationClickStartsActivity,
       'androidNotificationOngoing': androidNotificationOngoing,
       'resumeOnClick': resumeOnClick,
       'androidStopForegroundOnPause': androidStopForegroundOnPause,
@@ -677,6 +682,17 @@ class AudioService {
     await _channel.invokeMethod('skipToNext');
   }
 
+  /// Passes through to `setMediaItem` in the background task.
+  static Future<void> setMediaItem(MediaItem mediaItem) async {
+    await _channel.invokeMethod(
+        'clientSetMediaItem', _mediaItem2raw(mediaItem));
+  }
+
+  /// Passes through to `setState` in the background task.
+  static Future<void> setState(BasicPlaybackState state, int position) async {
+    await _channel.invokeMethod('clientSetState', [state.index, position]);
+  }
+
   /// Passes through to `onSkipToPrevious` in the background task.
   static Future<void> skipToPrevious() async {
     await _channel.invokeMethod('skipToPrevious');
@@ -726,7 +742,7 @@ class AudioService {
 /// playback actions initiated by the UI.
 class AudioServiceBackground {
   static final PlaybackState _noneState =
-      PlaybackState(basicState: BasicPlaybackState.none, actions: Set());
+  PlaybackState(basicState: BasicPlaybackState.none, actions: Set());
   static MethodChannel _backgroundChannel;
   static PlaybackState _state = _noneState;
   static MediaItem _mediaItem;
@@ -746,7 +762,7 @@ class AudioServiceBackground {
   /// otherwise control audio playback.
   static Future<void> run(BackgroundAudioTask taskBuilder()) async {
     _backgroundChannel =
-        const MethodChannel('ryanheise.com/audioServiceBackground');
+    const MethodChannel('ryanheise.com/audioServiceBackground');
     WidgetsFlutterBinding.ensureInitialized();
     final task = taskBuilder();
     _cacheManager = task.cacheManager;
@@ -808,6 +824,15 @@ class AudioServiceBackground {
           MediaItem mediaItem = _raw2mediaItem(args[0]);
           int index = args[1];
           task.onAddQueueItemAt(mediaItem, index);
+          break;
+        case 'onClientSetState':
+          final List args = call.arguments;
+          int indexState = args[0];
+          int position = args[1];
+          task.setState(indexState, position);
+          break;
+        case 'onClientSetMediaItem':
+          task.onSetMediaItem(_raw2mediaItem(call.arguments[0]));
           break;
         case 'onRemoveQueueItem':
           task.onRemoveQueueItem(_raw2mediaItem(call.arguments[0]));
@@ -893,14 +918,15 @@ class AudioServiceBackground {
       updateTime: updateTime,
     );
     List<Map> rawControls = controls
-        .map((control) => {
-              'androidIcon': control.androidIcon,
-              'label': control.label,
-              'action': control.action.index,
-            })
+        .map((control) =>
+    {
+      'androidIcon': control.androidIcon,
+      'label': control.label,
+      'action': control.action.index,
+    })
         .toList();
     final rawSystemActions =
-        systemActions.map((action) => action.index).toList();
+    systemActions.map((action) => action.index).toList();
     await _backgroundChannel.invokeMethod('setState', [
       rawControls,
       rawSystemActions,
@@ -1040,6 +1066,10 @@ abstract class BackgroundAudioTask {
   /// Called when a client has requested to resume audio playback, such as via
   /// a call to [AudioService.play].
   void onPlay() {}
+
+  void setState(int indexState, int position) {}
+
+  void onSetMediaItem(MediaItem mediaItem) {}
 
   /// Called when a client has requested to play a specific media item, such as
   /// via a call to [AudioService.playFromMediaId].
