@@ -321,7 +321,7 @@ abstract class VideoServiceClient {
   void onPause() {}
 
   /// Called when a client has requested to resume audio playback, such as via
-  void onPlay() {}
+  void onResume() {}
 
   void togglePlaying() {}
 
@@ -535,7 +535,7 @@ class AudioService {
           _client.togglePlaying();
           break;
         case 'onPlay':
-          _client.onPlay();
+          _client.onResume();
           break;
         case 'onPause':
           _client.onPause();
