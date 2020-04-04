@@ -829,7 +829,7 @@ class AudioServiceBackground {
           final List args = call.arguments;
           int indexState = args[0];
           int position = args[1];
-          task.setState(indexState, position);
+          task.onSetState(indexState, position);
           break;
         case 'onClientSetMediaItem':
           task.onSetMediaItem(_raw2mediaItem(call.arguments[0]));
@@ -1067,7 +1067,7 @@ abstract class BackgroundAudioTask {
   /// a call to [AudioService.play].
   void onPlay() {}
 
-  void setState(int indexState, int position) {}
+  void onSetState(int indexState, int position) {}
 
   void onSetMediaItem(MediaItem mediaItem) {}
 
