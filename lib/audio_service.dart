@@ -529,7 +529,7 @@ class AudioService {
         case 'onSeekTo':
           final List args = call.arguments;
           int pos = args[0];
-          _client.onSeekTo(position);
+          _client.onSeekTo(pos);
           break;
         case 'onClick':
           _client.togglePlaying();
