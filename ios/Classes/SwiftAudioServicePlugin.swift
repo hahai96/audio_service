@@ -213,42 +213,42 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
     }
     
     func play() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onPlay", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onPlay", arguments: nil)
     }
     
     func pause() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onPause", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onPause", arguments: nil)
     }
     
     func stop() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onStop", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onStop", arguments: nil)
     }
     
     func togglePlaying() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onClick", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onClick", arguments: nil)
         
     }
     
     func seek(to position: Double) {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onSeekTo", arguments: [UInt64(position)])
+        SwiftAudioServicePlugin.channel?.invokeMethod("onSeekTo", arguments: [UInt64(position)])
         
     }
     
     func nextTrack() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onSkipToNext", arguments: nil)
-        
+
+            SwiftAudioServicePlugin.channel?.invokeMethod("onSkipToNext", arguments: nil)
     }
     
     func previousTrack() {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onSkipToPrevious", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onSkipToPrevious", arguments: nil)
     }
     
     
     func skipForward(interval: Double) {
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onFastForward", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onFastForward", arguments: nil)
     }
     
     func skipBackward(interval: Double){
-        SwiftAudioServicePlugin.backgroundChannel?.invokeMethod("onRewind", arguments: nil)
+        SwiftAudioServicePlugin.channel?.invokeMethod("onRewind", arguments: nil)
     }
 }
