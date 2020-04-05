@@ -724,6 +724,14 @@ class AudioService {
     await _channel.invokeMethod('pause');
   }
 
+  static Future<void> enableNotification() async {
+    await _channel.invokeMethod('enableNotification');
+  }
+
+  static Future<void> disableNotification() async {
+    await _channel.invokeMethod('disableNotification');
+  }
+
   /// Passes through to `onStop` in the background task.
   static Future<void> stop() async {
     await _channel.invokeMethod('stop');
