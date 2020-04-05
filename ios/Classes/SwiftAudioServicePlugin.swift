@@ -72,8 +72,9 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             enableNotification()
             result(true)
         case "disableNotification":
+            print("================> 1")
             disableNotification()
-            result(true)           
+            result(true)
         case "isRunning":
             result(SwiftAudioServicePlugin.running)
         case "play":
@@ -164,9 +165,10 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             print(error)
         }
     }
-    
-    
+
+
     func disableNotification() {
+         print("====================> 2")
          SwiftAudioServicePlugin.remoteCommandController?.disable(commands: RemoteCommand.all())
          SwiftAudioServicePlugin.remoteCommandController = nil
          MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
@@ -176,7 +178,7 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
              print(error)
          }
     }
-    
+
     func enableNotification() {
         do{
             try SwiftAudioServicePlugin.audioSession.setCategory(.playback)
