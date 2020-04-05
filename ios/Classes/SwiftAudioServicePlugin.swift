@@ -168,7 +168,6 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
 
 
     func disableNotification() {
-         print("====================> 2")
          SwiftAudioServicePlugin.remoteCommandController?.disable(commands: RemoteCommand.all())
          SwiftAudioServicePlugin.remoteCommandController = nil
          MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
@@ -231,6 +230,7 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
         if let mediaItem = SwiftAudioServicePlugin.mediaItem {
             nowPlayingInfo[MPMediaItemPropertyTitle] = mediaItem["title"]
             nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = mediaItem["album"]
+            nowPlayingInfo[MPMediaItemPropertyArtist] = mediaItem["artist"]
             if let duration = mediaItem["duration"] as? UInt64 {
                 nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration / 1000
             }
