@@ -72,7 +72,6 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             enableNotification()
             result(true)
         case "disableNotification":
-            print("================> 1")
             disableNotification()
             result(true)
         case "isRunning":
@@ -92,16 +91,18 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
         case "setMediaItem":
             setMediaItem(arguments: call.arguments)
             result(true)
-
+        case "timerPeriodic":
+            invokeOn(callMthod: call.method, arguments: nil)
+            result(true)
         case "setRating":
             invokeOn(callMthod: call.method, arguments: [call.arguments,nil])
             result(true)
-            
+
         case
         "addQueueItemAt", "clientSetState":
             invokeOn(callMthod: call.method, arguments: call.arguments)
             result(true)
-            
+
         case "addQueueItem",
              "removeQueueItem",
              "clientSetMediaItem",
