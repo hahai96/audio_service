@@ -92,7 +92,7 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             setMediaItem(arguments: call.arguments)
             result(true)
         case "timerPeriodic":
-            invokeOn(callMthod: call.method, arguments: nil)
+            SwiftAudioServicePlugin.channel?.invokeMethod("onTimerPeriodic", arguments: nil)
             result(true)
         case "setRating":
             invokeOn(callMthod: call.method, arguments: [call.arguments,nil])
