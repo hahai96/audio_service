@@ -490,7 +490,6 @@ class AudioService {
   /// other methods in this class will work only while connected.
   static Future<void> connect() async {
     _channel.setMethodCallHandler((MethodCall call) async {
-      print('=========> call.method ${call.method}');
       switch (call.method) {
         case 'onChildrenLoaded':
           final List<Map> args = List<Map>.from(call.arguments[0]);
@@ -538,7 +537,6 @@ class AudioService {
           _client.onSeekTo(pos);
           break;
         case 'onTimerPeriodic':
-          print('=========> onTimerPeriodic');
           _timerPeriodic.add(DateTime
               .now()
               .millisecondsSinceEpoch);
