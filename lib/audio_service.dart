@@ -449,6 +449,11 @@ class AudioService {
   static Stream<MediaItem> get currentMediaItemStream =>
       _currentMediaItemSubject.stream;
 
+
+  static final _timerPeriodic = BehaviorSubject<int>();
+
+  static Stream<int> get timerPeriodicStream => _timerPeriodic.stream;
+
   static final _queueSubject = BehaviorSubject<List<MediaItem>>();
 
   /// A stream that broadcasts the queue.
@@ -531,6 +536,11 @@ class AudioService {
           int pos = args[0];
           _client.onSeekTo(pos);
           break;
+        case 'onTimerPeriodic':
+          _timerPeriodic.add(DateTime
+              .now()
+              .millisecondsSinceEpoch);
+          break;
         case 'onClick':
           _client.togglePlaying();
           break;
@@ -544,6 +554,7 @@ class AudioService {
           _client.onStop();
           break;
         case 'onStopped':
+          _timerPeriodic.add(null);
           _browseMediaChildren = null;
           _browseMediaChildrenSubject.add(null);
           _playbackState = null;
@@ -1007,6 +1018,11 @@ class AudioServiceBackground {
   static Future<void> setQueue(List<MediaItem> queue) async {
     await _backgroundChannel.invokeMethod(
         'setQueue', queue.map(_mediaItem2raw).toList());
+  }
+
+  /// Sets the current queue and notifies all clients.
+  static Future<void> timerPeriodic() async {
+    await _backgroundChannel.invokeMethod('timerPeriodic');
   }
 
   /// Sets the currently playing media item and notifies all clients.
