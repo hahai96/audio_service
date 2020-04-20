@@ -517,6 +517,9 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
 		}
 		@Override
 		public void onPause() {
+
+			if (clientHandler != null) clientHandler.invokeMethod("onPause");
+
 			invokeMethod("onPause");
 		}
 		@Override
@@ -580,10 +583,14 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
 		}
 		@Override
 		public void onSkipToNext() {
+			if (clientHandler != null) clientHandler.invokeMethod("onSkipToNext");
+
 			invokeMethod("onSkipToNext");
 		}
 		@Override
 		public void onSkipToPrevious() {
+			if (clientHandler != null) clientHandler.invokeMethod("onSkipToPrevious");
+
 			invokeMethod("onSkipToPrevious");
 		}
 		@Override
@@ -596,6 +603,8 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
 		}
 		@Override
 		public void onSeekTo(long pos) {
+			if (clientHandler != null) clientHandler.invokeMethod("onSeekTo", pos);
+
 			invokeMethod("onSeekTo", pos);
 		}
 		@Override
