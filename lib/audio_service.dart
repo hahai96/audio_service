@@ -38,6 +38,17 @@ MediaControl stopControl = const MediaControl(
   action: MediaAction.stop,
 );
 
+List<MediaControl> getControls(BasicPlaybackState state) {
+  switch (state) {
+    case BasicPlaybackState.playing:
+      return [skipPrevious, pauseControl, skipNext];
+    case BasicPlaybackState.paused:
+      return [skipPrevious, playControl, skipNext];
+    default:
+      return [skipPrevious, playControl, skipNext];
+  }
+}
+
 /// The different buttons on a headset.
 enum MediaButton {
   media,
@@ -515,17 +526,6 @@ class AudioService {
 
   static void enableServiceClient(VideoServiceClient client) {
     _client = client;
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    switch (state) {
-      case BasicPlaybackState.playing:
-        return [skipPrevious, pauseControl, skipNext];
-      case BasicPlaybackState.paused:
-        return [skipPrevious, playControl, skipNext];
-      default:
-        return [skipPrevious, playControl, skipNext];
-    }
   }
 
   /// Connects to the service from your UI so that audio playback can be
