@@ -839,7 +839,7 @@ class AudioService {
 
   /// Passes through to `setState` in the background task.
   static Future<void> setState(BasicPlaybackState state, int position) async {
-    List<Map> rawControls = controls
+    List<Map> rawControls = getControls(state)
         .map((control) =>
     {
       'androidIcon': control.androidIcon,
@@ -848,7 +848,7 @@ class AudioService {
     })
         .toList();
     final rawSystemActions =
-    systemActions.map((action) => action.index).toList();
+    [MediaAction.seekTo].map((action) => action.index).toList();
 
 
     await _channel.invokeMethod('clientSetState', [
