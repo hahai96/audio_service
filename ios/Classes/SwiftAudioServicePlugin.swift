@@ -98,21 +98,26 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             invokeOn(callMthod: call.method, arguments: [call.arguments,nil])
             result(true)
 
-        case
-        "addQueueItemAt", "clientSetState":
+        case "addQueueItemAt":
             invokeOn(callMthod: call.method, arguments: call.arguments)
+            result(true)
+
+        case "clientSetState":
+            setState(arguments: call.arguments)
             result(true)
 
         case "addQueueItem",
              "removeQueueItem",
-             "clientSetMediaItem",
              "click",
              "prepareFromMediaId",
              "playFromMediaId",
              "skipToQueueItem":
             invokeOn(callMthod: call.method, arguments: [call.arguments])
             result(true)
-            
+
+        case "clientSetMediaItem"
+            setMediaItem(arguments: call.arguments)
+            result(true)
         case "stop",
              "seekTo",
              "skipToNext",
