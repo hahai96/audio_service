@@ -115,7 +115,7 @@ public class SwiftAudioServicePlugin: NSObject, FlutterPlugin, PlayerActions {
             invokeOn(callMthod: call.method, arguments: [call.arguments])
             result(true)
 
-        case "clientSetMediaItem"
+        case "clientSetMediaItem":
             setMediaItem(arguments: call.arguments)
             result(true)
         case "stop",
