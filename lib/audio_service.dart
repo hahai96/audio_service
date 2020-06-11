@@ -8,6 +8,36 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:rxdart/rxdart.dart';
 
+
+MediaControl playControl = const MediaControl(
+  androidIcon: 'drawable/ic_action_play_arrow',
+  label: 'Play',
+  action: MediaAction.play,
+);
+MediaControl pauseControl = const MediaControl(
+  androidIcon: 'drawable/ic_action_pause',
+  label: 'Pause',
+  action: MediaAction.pause,
+);
+
+MediaControl skipPrevious = const MediaControl(
+  androidIcon: 'drawable/ic_skip_previous',
+  label: 'Skip Previous',
+  action: MediaAction.skipToPrevious,
+);
+
+MediaControl skipNext = const MediaControl(
+  androidIcon: 'drawable/ic_skip_next',
+  label: 'Skip Next',
+  action: MediaAction.skipToNext,
+);
+
+MediaControl stopControl = const MediaControl(
+  androidIcon: 'drawable/ic_action_stop',
+  label: 'Stop',
+  action: MediaAction.stop,
+);
+
 /// The different buttons on a headset.
 enum MediaButton {
   media,
@@ -423,6 +453,11 @@ class AudioService {
 
   static VideoServiceClient _client;
 
+  static MediaItem _mediaItem;
+
+  static BaseCacheManager _cacheManager;
+
+
   /// The root media ID for browsing media provided by the background
   /// task.
   static const String MEDIA_ROOT_ID = "root";
@@ -480,6 +515,17 @@ class AudioService {
 
   static void enableServiceClient(VideoServiceClient client) {
     _client = client;
+  }
+
+  List<MediaControl> getControls(BasicPlaybackState state) {
+    switch (state) {
+      case BasicPlaybackState.playing:
+        return [skipPrevious, pauseControl, skipNext];
+      case BasicPlaybackState.paused:
+        return [skipPrevious, playControl, skipNext];
+      default:
+        return [skipPrevious, playControl, skipNext];
+    }
   }
 
   /// Connects to the service from your UI so that audio playback can be
@@ -760,13 +806,60 @@ class AudioService {
 
   /// Passes through to `setMediaItem` in the background task.
   static Future<void> setMediaItem(MediaItem mediaItem) async {
-    await _channel.invokeMethod(
-        'clientSetMediaItem', _mediaItem2raw(mediaItem));
+    _mediaItem = mediaItem;
+    _cacheManager ??= DefaultCacheManager();
+
+    if (mediaItem.artUri != null) {
+      // We potentially need to fetch the art.
+      final fileInfo = await _cacheManager.getFileFromMemory(mediaItem.artUri);
+      File file = fileInfo?.file;
+      if (file == null) {
+        // We haven't fetched the art yet, so show the metadata now, and again
+        // after we load the art.
+        await _channel.invokeMethod(
+            'clientSetMediaItem', _mediaItem2raw(mediaItem));
+        // Load the art
+        file = await _cacheManager.getSingleFile(mediaItem.artUri);
+        // If we failed to download the art, abort.
+        if (file == null) return;
+        // If we've already set a new media item, cancel this request.
+        if (mediaItem != _mediaItem) return;
+      }
+      final extras = Map.of(mediaItem.extras ?? <String, dynamic>{});
+      extras['artCacheFile'] = file.path;
+      final platformMediaItem = mediaItem.copyWith(extras: extras);
+      // Show the media item after the art is loaded.
+      await _channel.invokeMethod(
+          'clientSetMediaItem', _mediaItem2raw(platformMediaItem));
+    } else {
+      await _channel.invokeMethod(
+          'clientSetMediaItem', _mediaItem2raw(mediaItem));
+    }
   }
 
   /// Passes through to `setState` in the background task.
   static Future<void> setState(BasicPlaybackState state, int position) async {
-    await _channel.invokeMethod('clientSetState', [state.index, position]);
+    List<Map> rawControls = controls
+        .map((control) =>
+    {
+      'androidIcon': control.androidIcon,
+      'label': control.label,
+      'action': control.action.index,
+    })
+        .toList();
+    final rawSystemActions =
+    systemActions.map((action) => action.index).toList();
+
+
+    await _channel.invokeMethod('clientSetState', [
+      rawControls,
+      rawSystemActions,
+      state.index,
+      position,
+      1.0,
+      null,
+      null
+    ]);
   }
 
   /// Passes through to `onSkipToPrevious` in the background task.
