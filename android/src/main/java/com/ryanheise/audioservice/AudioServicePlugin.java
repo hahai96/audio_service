@@ -402,13 +402,6 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
                     mediaController.getTransportControls().rewind();
                     result.success(true);
                     break;
-                case "timerPeriodic":
-
-                    Log.e("TAG", "==================> timerPeriodic");
-                    if (backgroundHandler != null)
-                        backgroundHandler.invokeMethod("onTimerPeriodic");
-                    result.success(true);
-                    break;
                 case "setRating":
                     HashMap<String, Object> arguments = (HashMap<String, Object>) call.arguments;
                     if (call.arguments != null) {
@@ -667,7 +660,8 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
                     result.success(true);
                     break;
                 case "timerPeriodic":
-
+                    invokeMethod("onTimerPeriodic");
+                    result.success(true);
                     break;
                 case "setState":
                     List<Object> args = (List<Object>) call.arguments;
