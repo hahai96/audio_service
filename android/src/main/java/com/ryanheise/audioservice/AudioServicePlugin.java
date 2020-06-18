@@ -519,6 +519,7 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
 
         @Override
         public void onClick(MediaControl mediaControl) {
+            if (clientHandler != null) clientHandler.invokeMethod("onClick");
             invokeMethod("onClick", mediaControl.ordinal());
         }
 
@@ -560,8 +561,10 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
                 DartCallback dartCallback = new DartCallback(context.getAssets(), appBundlePath, cb);
 
                 executor.executeDartCallback(dartCallback);
-            } else
+            } else {
+                if (clientHandler != null) clientHandler.invokeMethod("onPlay");
                 invokeMethod("onPlay");
+            }
         }
 
         @Override
@@ -571,6 +574,7 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
 
         @Override
         public void onStop() {
+            if (clientHandler != null) clientHandler.invokeMethod("onStop");
             invokeMethod("onStop");
         }
 
