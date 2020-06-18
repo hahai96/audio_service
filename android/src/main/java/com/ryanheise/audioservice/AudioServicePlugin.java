@@ -403,6 +403,8 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
                     result.success(true);
                     break;
                 case "timerPeriodic":
+
+                    Log.e("TAG", "==================> timerPeriodic");
                     if (backgroundHandler != null)
                         backgroundHandler.invokeMethod("onTimerPeriodic");
                     result.success(true);
