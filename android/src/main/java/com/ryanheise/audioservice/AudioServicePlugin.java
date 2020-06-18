@@ -636,8 +636,8 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
         @Override
         public void onMethodCall(MethodCall call, Result result) {
             Context context = AudioService.instance;
+            Log.e("TAG", "===================> call.method = " + call.method);
             switch (call.method) {
-                Log.e("TAG", "===================> call.method = " + call.method);
                 case "ready":
                     result.success(true);
                     sendStartResult(true);
