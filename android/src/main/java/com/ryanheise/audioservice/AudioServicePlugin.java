@@ -636,7 +636,7 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
         @Override
         public void onMethodCall(MethodCall call, Result result) {
             Context context = AudioService.instance;
-            Log.e("TAG", "===================> call.method = " + call.method);
+
             switch (call.method) {
                 case "ready":
                     result.success(true);
@@ -661,8 +661,7 @@ public class AudioServicePlugin implements FlutterPlugin, ActivityAware {
                     result.success(true);
                     break;
                 case "timerPeriodic":
-                    Log.e("TAG", "===================> aaaaaaaa");
-                    invokeMethod("onTimerPeriodic");
+                    if (clientHandler != null) clientHandler.invokeMethod("onTimerPeriodic");
                     result.success(true);
                     break;
                 case "setState":
